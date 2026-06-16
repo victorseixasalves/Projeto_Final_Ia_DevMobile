@@ -1,8 +1,16 @@
 export const Colors = {
-  primary: '#1B6CA8',
-  primaryDark: '#0D4F7C',
-  primaryLight: '#E8F4FD',
-  
+  primary: '#00BFA5',
+  primaryDark: '#00897B',
+  primaryLight: '#E0F7F4',
+
+  secondary: '#7B3FA0',
+  secondaryDark: '#5C2D7A',
+  secondaryLight: '#EDE7F6',
+
+  accent: '#26D7C0',
+  accentLight: '#B2EFE8',
+
+  // Urgências — originais
   urgenciaBaixa: '#2E7D32',
   urgenciaBaixaLight: '#E8F5E9',
   urgenciaMedia: '#F9A825',
@@ -10,14 +18,15 @@ export const Colors = {
   urgenciaAlta: '#C62828',
   urgenciaAltaLight: '#FFEBEE',
 
-  background: '#F5F7FA',
-  surface: '#FFFFFF',
-  border: '#E0E7EF',
-  
-  text: '#1A2340',
-  textSecondary: '#5A6B85',
-  textMuted: '#9BAABF',
-  
+  // Fundo roxo bem clarinho, cards levemente lilás
+  background: '#F3F0FA',
+  surface: '#FAF8FF',
+  border: '#DDD6F0',
+
+  text: '#1C1B2E',
+  textSecondary: '#5B5B7A',
+  textMuted: '#9A9ABF',
+
   white: '#FFFFFF',
   black: '#000000',
 };

@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 32 },
   infoBanner: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: Colors.primaryLight, borderRadius: 12, padding: 12, marginBottom: 14 },
   infoText: { flex: 1, fontSize: 13, color: Colors.primary, lineHeight: 19 },
-  card: { backgroundColor: Colors.white, borderRadius: 16, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
+  card: { backgroundColor: Colors.surface, borderRadius: 16, padding: 16, marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
   cardIcon: { fontSize: 20 },
   cardTitle: { fontSize: 16, fontWeight: '700', color: Colors.text },

@@ -12,34 +12,34 @@ interface Props {
   onChange: (v: number) => void;
 }
 
-// Slider nativo simples usando botões de incremento
 export default function SliderInput({ label, value, min = 0, max = 10, labelMin, labelMax, onChange }: Props) {
   const pct = ((value - min) / (max - min)) * 100;
-
   const steps = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+
+  const trackColor = getTrackColor(pct);
+  const badgeColor = getBadgeColor(pct);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.label}>{label}</Text>
-        <View style={[styles.badge, { backgroundColor: getBadgeColor(pct) }]}>
+        <View style={[styles.badge, { backgroundColor: badgeColor }]}>
           <Text style={styles.badgeText}>{value.toFixed(0)}</Text>
         </View>
       </View>
 
       <View style={styles.track}>
-        <View style={[styles.fill, { width: `${pct}%` as any }]} />
+        <View style={[styles.fill, { width: `${pct}%` as any, backgroundColor: trackColor }]} />
         {steps.map(s => (
           <View
             key={s}
             style={[
               styles.dot,
               { left: `${((s - min) / (max - min)) * 100}%` as any },
-              s <= value && styles.dotActive,
+              s <= value && { backgroundColor: trackColor },
             ]}
           />
         ))}
-        {/* Botões invisíveis sobre a track */}
         <View style={styles.buttonsRow}>
           {steps.map(s => (
             <Text key={s} style={styles.hitArea} onPress={() => onChange(s)} />
@@ -61,6 +61,12 @@ function getBadgeColor(pct: number) {
   return Colors.urgenciaAlta;
 }
 
+function getTrackColor(pct: number) {
+  if (pct <= 33) return Colors.urgenciaBaixa;
+  if (pct <= 66) return Colors.urgenciaMedia;
+  return Colors.urgenciaAlta;
+}
+
 const styles = StyleSheet.create({
   container: { marginBottom: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
@@ -68,9 +74,8 @@ const styles = StyleSheet.create({
   badge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12 },
   badgeText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   track: { height: 8, backgroundColor: Colors.border, borderRadius: 4, position: 'relative', justifyContent: 'center' },
-  fill: { position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: Colors.primary, borderRadius: 4 },
+  fill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 4 },
   dot: { position: 'absolute', width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.border, marginLeft: -3, top: 1 },
-  dotActive: { backgroundColor: Colors.primary },
   buttonsRow: { position: 'absolute', left: 0, right: 0, top: -12, bottom: -12, flexDirection: 'row' },
   hitArea: { flex: 1, height: '100%' },
   labels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
