@@ -5,6 +5,7 @@ export interface Tutor {
   nome: string;
   email: string;
   telefone: string;
+  senha: string;
 }
 
 export interface Animal {
@@ -34,21 +35,47 @@ export interface Triagem {
 }
 
 const KEYS = {
-  tutor: 'petcare_tutor',
+  tutores: 'petcare_tutores',   // lista de todos os tutores cadastrados
+  sessao: 'petcare_sessao',     // email do tutor logado atualmente
   animais: 'petcare_animais',
   triagens: 'petcare_triagens',
 };
 
-// TUTOR
+// TUTORES
+export async function getTutores(): Promise<Tutor[]> {
+  const v = await AsyncStorage.getItem(KEYS.tutores);
+  return v ? JSON.parse(v) : [];
+}
+
 export async function saveTutor(tutor: Tutor) {
-  await AsyncStorage.setItem(KEYS.tutor, JSON.stringify(tutor));
+  const lista = await getTutores();
+  const idx = lista.findIndex(t => t.email === tutor.email);
+  if (idx >= 0) lista[idx] = tutor;
+  else lista.push(tutor);
+  await AsyncStorage.setItem(KEYS.tutores, JSON.stringify(lista));
+  // salva sessão ao cadastrar
+  await AsyncStorage.setItem(KEYS.sessao, tutor.email);
 }
+
 export async function getTutor(): Promise<Tutor | null> {
-  const v = await AsyncStorage.getItem(KEYS.tutor);
-  return v ? JSON.parse(v) : null;
+  const emailSessao = await AsyncStorage.getItem(KEYS.sessao);
+  if (!emailSessao) return null;
+  const lista = await getTutores();
+  return lista.find(t => t.email === emailSessao) || null;
 }
+
+export async function findTutorByEmail(email: string): Promise<Tutor | null> {
+  const lista = await getTutores();
+  return lista.find(t => t.email === email) || null;
+}
+
+export async function iniciarSessao(email: string) {
+  await AsyncStorage.setItem(KEYS.sessao, email);
+}
+
+// logout: apaga só a sessão, não apaga o cadastro
 export async function clearTutor() {
-  await AsyncStorage.removeItem(KEYS.tutor);
+  await AsyncStorage.removeItem(KEYS.sessao);
 }
 
 // ANIMAIS

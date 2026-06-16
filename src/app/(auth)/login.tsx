@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
-import { saveTutor } from '../../services/storage';
+import { saveTutor, findTutorByEmail, iniciarSessao } from '../../services/storage';
 
 export default function LoginScreen() {
   const [mode, setMode] = useState<'login' | 'cadastro'>('login');
@@ -20,19 +20,42 @@ export default function LoginScreen() {
       Alert.alert('Atenção', 'Preencha e-mail e senha.');
       return;
     }
-    if (mode === 'cadastro' && !nome) {
-      Alert.alert('Atenção', 'Preencha seu nome.');
-      return;
-    }
     setLoading(true);
-    await saveTutor({
-      id: Date.now().toString(),
-      nome: mode === 'login' ? email.split('@')[0] : nome,
-      email,
-      telefone,
-    });
+
+    if (mode === 'cadastro') {
+      if (!nome) {
+        Alert.alert('Atenção', 'Preencha seu nome.');
+        setLoading(false);
+        return;
+      }
+      const jaExiste = await findTutorByEmail(email);
+      if (jaExiste) {
+        Alert.alert('Erro', 'Já existe uma conta com esse e-mail.');
+        setLoading(false);
+        return;
+      }
+      await saveTutor({
+        id: Date.now().toString(),
+        nome,
+        email,
+        telefone,
+        senha,
+      });
+      router.replace('/(tabs)');
+
+    } else {
+      // LOGIN: busca o tutor pelo email e verifica a senha
+      const tutor = await findTutorByEmail(email);
+      if (!tutor || tutor.senha !== senha) {
+        Alert.alert('Erro', 'E-mail ou senha inválidos.');
+        setLoading(false);
+        return;
+      }
+      await iniciarSessao(email);
+      router.replace('/(tabs)');
+    }
+
     setLoading(false);
-    router.replace('/(tabs)');
   }
 
   return (
