@@ -3,25 +3,70 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
-import { getTutor, clearTutor } from '../../services/storage';
+import { getTutor, clearTutor, getTutores, getAnimais, deleteAnimal } from '../../services/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PerfilScreen() {
   const [tutor, setTutor] = useState<any>(null);
 
-    useFocusEffect(useCallback(() => {
-      const carregar = async () => {
-        const t = await getTutor();
-        if (!t) router.replace('/(auth)/login');
-       else setTutor(t);
-     };
-     carregar();
-    }, []));
+  useFocusEffect(useCallback(() => {
+    const carregar = async () => {
+      const t = await getTutor();
+      if (!t) router.replace('/(auth)/login');
+      else setTutor(t);
+    };
+    carregar();
+  }, []));
 
   function handleLogout() {
     Alert.alert('Sair', 'Deseja encerrar a sessão?', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Sair', style: 'destructive', onPress: async () => { await clearTutor(); router.replace('/(auth)/login'); } },
     ]);
+  }
+
+  function handleDeleteAccount() {
+    Alert.alert(
+      'Excluir conta',
+      'Tem certeza que deseja excluir sua conta? Todos os seus animais e triagens serão removidos permanentemente.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Confirmar exclusão',
+              'Esta ação não pode ser desfeita. Deseja continuar?',
+              [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                  text: 'Sim, excluir tudo',
+                  style: 'destructive',
+                  onPress: async () => {
+                    // Remove animais do tutor e suas triagens
+                    const animais = await getAnimais();
+                    const animaisTutor = animais.filter(a => a.tutorId === tutor.id);
+                    for (const animal of animaisTutor) {
+                      await deleteAnimal(animal.id);
+                    }
+
+                    // Remove o tutor da lista
+                    const tutores = await getTutores();
+                    const novaLista = tutores.filter(t => t.id !== tutor.id);
+                    await AsyncStorage.setItem('petcare_tutores', JSON.stringify(novaLista));
+
+                    // Encerra a sessão
+                    await clearTutor();
+                    router.replace('/(auth)/login');
+                  },
+                },
+              ]
+            );
+          },
+        },
+      ]
+    );
   }
 
   if (!tutor) return null;
@@ -46,6 +91,11 @@ export default function PerfilScreen() {
         <Ionicons name="log-out-outline" size={20} color={Colors.urgenciaAlta} />
         <Text style={styles.logoutText}>Sair da conta</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.deleteBtn} onPress={handleDeleteAccount}>
+        <Ionicons name="trash-outline" size={20} color={Colors.urgenciaAlta} />
+        <Text style={styles.deleteText}>Excluir minha conta</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -62,4 +112,6 @@ const styles = StyleSheet.create({
   infoText: { flex: 1, fontSize: 13, color: Colors.primary, lineHeight: 20 },
   logoutBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 32, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: Colors.urgenciaAlta, width: '100%', justifyContent: 'center' },
   logoutText: { fontSize: 15, fontWeight: '600', color: Colors.urgenciaAlta },
+  deleteBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: Colors.urgenciaAlta, backgroundColor: Colors.urgenciaAltaLight, width: '100%', justifyContent: 'center' },
+  deleteText: { fontSize: 15, fontWeight: '600', color: Colors.urgenciaAlta },
 });
