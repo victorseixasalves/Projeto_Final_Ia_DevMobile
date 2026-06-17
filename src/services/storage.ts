@@ -91,8 +91,14 @@ export async function saveAnimal(animal: Animal) {
   await AsyncStorage.setItem(KEYS.animais, JSON.stringify(list));
 }
 export async function deleteAnimal(id: string) {
+  // Remove o animal
   const list = await getAnimais();
   await AsyncStorage.setItem(KEYS.animais, JSON.stringify(list.filter(a => a.id !== id)));
+
+  // Remove as triagens do animal também
+  const v = await AsyncStorage.getItem(KEYS.triagens);
+  const all: Triagem[] = v ? JSON.parse(v) : [];
+  await AsyncStorage.setItem(KEYS.triagens, JSON.stringify(all.filter(t => t.animalId !== id)));
 }
 
 // TRIAGENS
@@ -107,3 +113,4 @@ export async function saveTriagem(triagem: Triagem) {
   all.push(triagem);
   await AsyncStorage.setItem(KEYS.triagens, JSON.stringify(all));
 }
+

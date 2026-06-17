@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity,
   StyleSheet, Alert, RefreshControl
 } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../../constants/Colors';
 import { getAnimais, deleteAnimal, Animal, getTutor } from '../../services/storage';
 
@@ -17,20 +18,38 @@ export default function HomeScreen() {
   const [tutor, setTutor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-    const load = useCallback(() => {
-      const carregar = async () => {
-        setLoading(true);
-       const t = await getTutor();
-        if (!t) { router.replace('/(auth)/login'); return; }
-        setTutor(t);
-        const list = await getAnimais();
-        setAnimais(list.filter(a => a.tutorId === t.id));
-        setLoading(false);
-     };
-     carregar();
-    }, []);
+  // 👇 LOG TEMPORÁRIO — remova depois de verificar
+  useEffect(() => {
+    async function verBanco() {
+      const keys = await AsyncStorage.getAllKeys();
+      const values = await AsyncStorage.multiGet(keys);
+      console.log('=== BANCO DE DADOS ===');
+      values.forEach(([key, value]) => {
+        try {
+          console.log(key, JSON.parse(value || '{}'));
+        } catch {
+          console.log(key, value);
+        }
+      });
+      console.log('======================');
+    }
+    verBanco();
+  }, []);
 
-useFocusEffect(load);
+  const load = useCallback(() => {
+    const carregar = async () => {
+      setLoading(true);
+      const t = await getTutor();
+      if (!t) { router.replace('/(auth)/login'); return; }
+      setTutor(t);
+      const list = await getAnimais();
+      setAnimais(list.filter(a => a.tutorId === t.id));
+      setLoading(false);
+    };
+    carregar();
+  }, []);
+
+  useFocusEffect(load);
 
   function confirmDelete(animal: Animal) {
     Alert.alert('Remover animal', `Deseja remover ${animal.nome}?`, [
@@ -41,7 +60,6 @@ useFocusEffect(load);
 
   return (
     <View style={styles.container}>
-      {/* Saudação */}
       <View style={styles.greeting}>
         <View>
           <Text style={styles.greetingHello}>Olá, {tutor?.nome?.split(' ')[0] || 'Tutor'} 👋</Text>
@@ -84,7 +102,6 @@ useFocusEffect(load);
         />
       )}
 
-      {/* FAB */}
       <TouchableOpacity style={styles.fab} onPress={() => router.push('/animais/novo')}>
         <Ionicons name="add" size={28} color={Colors.white} />
       </TouchableOpacity>
