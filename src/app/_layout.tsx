@@ -1,19 +1,17 @@
 import { Stack } from 'expo-router';
-import { Platform, StatusBar } from 'react-native';
-import { Colors } from '../../constants/Colors';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function TriagemLayout() {
-  const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 0;
-
+export default function RootLayout() {
   return (
-    <Stack screenOptions={{
-      headerStyle: {
-        backgroundColor: Colors.white,
-        paddingTop: statusBarHeight, // 👈 empurra o conteúdo do header para baixo
-      } as any,
-      headerTitleStyle: { fontWeight: '700', color: Colors.text },
-      headerTintColor: Colors.primary,
-      headerShadowVisible: false,
-    }} />
+    <SafeAreaProvider>
+      <StatusBar style="dark" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="animais" />
+        <Stack.Screen name="triagem" />
+      </Stack>
+    </SafeAreaProvider>
   );
 }

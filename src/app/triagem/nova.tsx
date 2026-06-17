@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
   StyleSheet, TextInput, Alert, KeyboardAvoidingView, Platform
 } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
 import { calcularUrgencia } from '../../services/fuzzy';
 import { saveTriagem } from '../../services/storage';
 import SliderInput from '../../components/ui/SliderInput';
 
-// Mucosas: 0=róseas, 10=cianose
 const MUCOSAS_OPTIONS = [
   { value: 0, label: 'Róseas (Normal)' },
   { value: 3, label: 'Pálidas' },
@@ -21,12 +20,17 @@ const MUCOSAS_OPTIONS = [
 
 export default function NovaTriagemScreen() {
   const { animalId } = useLocalSearchParams<{ animalId: string }>();
+  const navigation = useNavigation();
   const [letargia, setLetargia] = useState(0);
   const [apetite, setApetite] = useState(10);
   const [freqResp, setFreqResp] = useState(0);
   const [hidratacao, setHidratacao] = useState(0);
   const [mucosas, setMucosas] = useState(0);
   const [observacoes, setObservacoes] = useState('');
+
+  useEffect(() => {
+    navigation.setOptions({ title: 'Nova Triagem' });
+  }, []);
 
   function handleAvaliar() {
     const result = calcularUrgencia({ letargia, apetite, freqResp, hidratacao, mucosas });
@@ -47,58 +51,29 @@ export default function NovaTriagemScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-
-        {/* Info banner */}
         <View style={styles.infoBanner}>
           <Ionicons name="information-circle-outline" size={18} color={Colors.primary} />
           <Text style={styles.infoText}>Avalie os sintomas observados nas últimas horas. Valores padrão = animal saudável.</Text>
         </View>
 
-        {/* Card 1: Comportamento */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardIcon}>🐾</Text>
             <Text style={styles.cardTitle}>Comportamento</Text>
           </View>
-          <SliderInput
-            label="Letargia (nível de energia)"
-            value={letargia}
-            labelMin="Ativo e alerta"
-            labelMax="Imóvel / sem resposta"
-            onChange={setLetargia}
-          />
-          <SliderInput
-            label="Apetite"
-            value={apetite}
-            labelMin="Sem apetite"
-            labelMax="Apetite normal"
-            onChange={setApetite}
-          />
+          <SliderInput label="Letargia (nível de energia)" value={letargia} labelMin="Ativo e alerta" labelMax="Imóvel / sem resposta" onChange={setLetargia} />
+          <SliderInput label="Apetite" value={apetite} labelMin="Sem apetite" labelMax="Apetite normal" onChange={setApetite} />
         </View>
 
-        {/* Card 2: Sinais Vitais */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardIcon}>💓</Text>
             <Text style={styles.cardTitle}>Sinais Vitais</Text>
           </View>
-          <SliderInput
-            label="Frequência respiratória"
-            value={freqResp}
-            labelMin="Normal e regular"
-            labelMax="Muito alterada / ofegante"
-            onChange={setFreqResp}
-          />
-          <SliderInput
-            label="Hidratação"
-            value={hidratacao}
-            labelMin="Bem hidratado"
-            labelMax="Muito desidratado"
-            onChange={setHidratacao}
-          />
+          <SliderInput label="Frequência respiratória" value={freqResp} labelMin="Normal e regular" labelMax="Muito alterada / ofegante" onChange={setFreqResp} />
+          <SliderInput label="Hidratação" value={hidratacao} labelMin="Bem hidratado" labelMax="Muito desidratado" onChange={setHidratacao} />
         </View>
 
-        {/* Card 3: Mucosas */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardIcon}>👁️</Text>
@@ -120,7 +95,6 @@ export default function NovaTriagemScreen() {
           </View>
         </View>
 
-        {/* Observações */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardIcon}>📝</Text>
@@ -137,7 +111,6 @@ export default function NovaTriagemScreen() {
           />
         </View>
 
-        {/* Botão Avaliar */}
         <TouchableOpacity style={styles.avaliarBtn} onPress={handleAvaliar}>
           <Ionicons name="pulse" size={22} color={Colors.white} />
           <Text style={styles.avaliarBtnText}>Avaliar Urgência</Text>

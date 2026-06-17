@@ -3,7 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform
 } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
 import { saveAnimal, getAnimais, Animal } from '../../services/storage';
 
@@ -15,6 +15,7 @@ const SEXO = [{ key: 'M', label: 'Macho' }, { key: 'F', label: 'Fêmea' }];
 
 export default function EditarAnimalScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const navigation = useNavigation();
   const [nome, setNome] = useState('');
   const [especie, setEspecie] = useState('cao');
   const [raca, setRaca] = useState('');
@@ -22,6 +23,10 @@ export default function EditarAnimalScreen() {
   const [peso, setPeso] = useState('');
   const [sexo, setSexo] = useState('M');
   const [original, setOriginal] = useState<Animal | null>(null);
+
+  useEffect(() => {
+    navigation.setOptions({ title: 'Editar Animal' });
+  }, []);
 
   useEffect(() => {
     getAnimais().then(list => {

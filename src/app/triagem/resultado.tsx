@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
 
@@ -42,7 +42,13 @@ const NIVEL_CONFIG = {
 
 export default function ResultadoScreen() {
   const { json } = useLocalSearchParams<{ json: string }>();
+  const navigation = useNavigation();
   const data = json ? JSON.parse(decodeURIComponent(json)) : null;
+
+  useEffect(() => {
+    navigation.setOptions({ title: 'Resultado' });
+  }, []);
+
   if (!data) return null;
 
   const config = NIVEL_CONFIG[data.nivel as keyof typeof NIVEL_CONFIG] || NIVEL_CONFIG.Baixa;
@@ -59,7 +65,6 @@ export default function ResultadoScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Resultado principal */}
       <View style={[styles.resultCard, { borderColor: cor, backgroundColor: corLight }]}>
         <Text style={styles.resultEmoji}>{config.icon}</Text>
         <Text style={[styles.resultTitle, { color: cor }]}>{config.title}</Text>
@@ -67,14 +72,12 @@ export default function ResultadoScreen() {
           <Text style={styles.scoreLabel}>Score de urgência:</Text>
           <Text style={[styles.scoreValue, { color: cor }]}>{data.score}/100</Text>
         </View>
-        {/* Barra de score */}
         <View style={styles.scorebar}>
           <View style={[styles.scorebarFill, { width: `${data.score}%` as any, backgroundColor: cor }]} />
         </View>
         <Text style={[styles.mensagem, { color: cor }]}>{data.mensagem}</Text>
       </View>
 
-      {/* Orientações */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Ionicons name={config.icon2} size={20} color={cor} />
@@ -88,7 +91,6 @@ export default function ResultadoScreen() {
         ))}
       </View>
 
-      {/* Detalhes dos inputs */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Ionicons name="bar-chart-outline" size={20} color={Colors.primary} />
@@ -114,7 +116,6 @@ export default function ResultadoScreen() {
         </Text>
       </View>
 
-      {/* Disclaimer */}
       <View style={styles.disclaimerBox}>
         <Ionicons name="shield-outline" size={16} color={Colors.textMuted} />
         <Text style={styles.disclaimerText}>Esta triagem é um apoio. Não substitui a avaliação de um médico veterinário habilitado.</Text>
