@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
 import { saveAnimal, getTutor } from '../../services/storage';
 
@@ -20,12 +20,17 @@ const SEXO = [
 ];
 
 export default function NovoAnimalScreen() {
+  const navigation = useNavigation();
   const [nome, setNome] = useState('');
   const [especie, setEspecie] = useState('cao');
   const [raca, setRaca] = useState('');
   const [idade, setIdade] = useState('');
   const [peso, setPeso] = useState('');
   const [sexo, setSexo] = useState('M');
+
+  useEffect(() => {
+    navigation.setOptions({ title: 'Novo Animal' });
+  }, []);
 
   async function handleSave() {
     if (!nome.trim()) { Alert.alert('Atenção', 'Informe o nome do animal.'); return; }
