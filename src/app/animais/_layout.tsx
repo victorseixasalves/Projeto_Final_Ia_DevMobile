@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
+
 export default function AnimaisLayout() {
   return (
     <Stack
@@ -9,6 +10,8 @@ export default function AnimaisLayout() {
         headerTintColor: Colors.primary,
         headerShadowVisible: false,
       }}
-    />
+    >
+      <Stack.Screen name="[id]" options={{ title: '' }} />
+    </Stack>
   );
 }

@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
 export default function TriagemLayout() {
+  
   return (
     <Stack screenOptions={{
       headerStyle: { backgroundColor: Colors.white },

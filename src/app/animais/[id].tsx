@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet
 } from 'react-native';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
 import { getAnimais, getTriagens, Animal, Triagem } from '../../services/storage';
@@ -27,6 +27,13 @@ export default function AnimalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [animal, setAnimal] = useState<Animal | null>(null);
   const [triagens, setTriagens] = useState<Triagem[]>([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (animal) {
+      navigation.setOptions({ title: animal.nome });
+    }
+  }, [animal, navigation]);
 
   useFocusEffect(useCallback(() => {
     getAnimais().then(list => setAnimal(list.find(a => a.id === id) || null));
@@ -37,7 +44,6 @@ export default function AnimalDetailScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header do animal */}
       <View style={styles.header}>
         <View style={styles.avatarBox}>
           <Text style={styles.avatarIcon}>{ESPECIES[animal.especie] || '🐾'}</Text>
@@ -57,14 +63,12 @@ export default function AnimalDetailScreen() {
         </View>
       </View>
 
-      {/* Botão Nova Triagem */}
       <TouchableOpacity style={styles.trigemBtn} onPress={() => router.push(`/triagem/nova?animalId=${id}`)}>
         <Ionicons name="pulse" size={22} color={Colors.white} />
         <Text style={styles.trigemBtnText}>Nova Triagem</Text>
         <Ionicons name="chevron-forward" size={18} color={Colors.white} />
       </TouchableOpacity>
 
-      {/* Histórico */}
       <Text style={styles.sectionTitle}>Histórico de Triagens</Text>
       {triagens.length === 0 ? (
         <View style={styles.emptyHistory}>
