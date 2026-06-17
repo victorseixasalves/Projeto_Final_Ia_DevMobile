@@ -4,6 +4,7 @@ import {
   StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView
 } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
 import { saveTutor, findTutorByEmail, iniciarSessao } from '../../services/storage';
 
@@ -13,6 +14,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
   const [senha, setSenha] = useState('');
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit() {
@@ -44,7 +46,6 @@ export default function LoginScreen() {
       router.replace('/(tabs)');
 
     } else {
-      // LOGIN: busca o tutor pelo email e verifica a senha
       const tutor = await findTutorByEmail(email);
       if (!tutor || tutor.senha !== senha) {
         Alert.alert('Erro', 'E-mail ou senha inválidos.');
@@ -106,7 +107,23 @@ export default function LoginScreen() {
           )}
           <View style={styles.field}>
             <Text style={styles.fieldLabel}>Senha</Text>
-            <TextInput style={styles.input} value={senha} onChangeText={setSenha} placeholder="••••••••" placeholderTextColor={Colors.textMuted} secureTextEntry />
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.inputWithIcon}
+                value={senha}
+                onChangeText={setSenha}
+                placeholder="••••••••"
+                placeholderTextColor={Colors.textMuted}
+                secureTextEntry={!senhaVisivel}
+              />
+              <TouchableOpacity onPress={() => setSenhaVisivel(v => !v)} style={styles.eyeBtn}>
+                <Ionicons
+                  name={senhaVisivel ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color={Colors.textMuted}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <TouchableOpacity style={styles.btn} onPress={handleSubmit} disabled={loading}>
@@ -137,6 +154,9 @@ const styles = StyleSheet.create({
   field: { marginBottom: 16 },
   fieldLabel: { fontSize: 13, fontWeight: '600', color: Colors.textSecondary, marginBottom: 6 },
   input: { backgroundColor: Colors.background, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.text, borderWidth: 1, borderColor: Colors.border },
+  inputWrapper: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.background, borderRadius: 10, borderWidth: 1, borderColor: Colors.border },
+  inputWithIcon: { flex: 1, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.text },
+  eyeBtn: { paddingHorizontal: 14 },
   btn: { backgroundColor: Colors.primary, borderRadius: 12, paddingVertical: 15, alignItems: 'center', marginTop: 8, shadowColor: Colors.primary, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4 },
   btnText: { color: Colors.white, fontSize: 16, fontWeight: '700' },
   footer: { textAlign: 'center', fontSize: 12, color: Colors.textMuted, marginTop: 24, lineHeight: 18 },
