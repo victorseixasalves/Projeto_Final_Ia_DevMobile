@@ -1,4 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Crypto from 'expo-crypto';
+
+async function hashSenha(senha: string): Promise<string> {
+  return await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    senha
+  );
+}
 
 export interface Tutor {
   id: string;
@@ -48,13 +56,18 @@ export async function getTutores(): Promise<Tutor[]> {
 }
 
 export async function saveTutor(tutor: Tutor) {
+  // Criptografa a senha antes de salvar
+  const tutorComHash: Tutor = {
+    ...tutor,
+    senha: await hashSenha(tutor.senha),
+  };
   const lista = await getTutores();
-  const idx = lista.findIndex(t => t.email === tutor.email);
-  if (idx >= 0) lista[idx] = tutor;
-  else lista.push(tutor);
+  const idx = lista.findIndex(t => t.email === tutorComHash.email);
+  if (idx >= 0) lista[idx] = tutorComHash;
+  else lista.push(tutorComHash);
   await AsyncStorage.setItem(KEYS.tutores, JSON.stringify(lista));
   // salva sessão ao cadastrar
-  await AsyncStorage.setItem(KEYS.sessao, tutor.email);
+  await AsyncStorage.setItem(KEYS.sessao, tutorComHash.email);
 }
 
 export async function getTutor(): Promise<Tutor | null> {
@@ -67,6 +80,12 @@ export async function getTutor(): Promise<Tutor | null> {
 export async function findTutorByEmail(email: string): Promise<Tutor | null> {
   const lista = await getTutores();
   return lista.find(t => t.email === email) || null;
+}
+
+// Verifica senha comparando o hash
+export async function verificarSenha(senhaDigitada: string, hashArmazenado: string): Promise<boolean> {
+  const hashDigitado = await hashSenha(senhaDigitada);
+  return hashDigitado === hashArmazenado;
 }
 
 export async function iniciarSessao(email: string) {
@@ -113,4 +132,3 @@ export async function saveTriagem(triagem: Triagem) {
   all.push(triagem);
   await AsyncStorage.setItem(KEYS.triagens, JSON.stringify(all));
 }
-

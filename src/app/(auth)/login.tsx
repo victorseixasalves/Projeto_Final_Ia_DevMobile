@@ -6,7 +6,18 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
-import { saveTutor, findTutorByEmail, iniciarSessao } from '../../services/storage';
+import { saveTutor, findTutorByEmail, iniciarSessao, verificarSenha } from '../../services/storage';
+
+function formatarTelefone(valor: string): string {
+  const nums = valor.replace(/\D/g, '');
+  if (nums.length === 0) return '';
+  if (nums.length <= 2) return `(${nums}`;
+  if (nums.length <= 3) return `(${nums.slice(0, 2)}) ${nums.slice(2)}`;
+  if (nums.length <= 7) return `(${nums.slice(0, 2)}) ${nums.slice(2, 3)} ${nums.slice(3)}`;
+  if (nums.length <= 11)
+    return `(${nums.slice(0, 2)}) ${nums.slice(2, 3)} ${nums.slice(3, 7)}-${nums.slice(7)}`;
+  return `(${nums.slice(0, 2)}) ${nums.slice(2, 3)} ${nums.slice(3, 7)}-${nums.slice(7, 11)}`;
+}
 
 export default function LoginScreen() {
   const [mode, setMode] = useState<'login' | 'cadastro'>('login');
@@ -47,7 +58,8 @@ export default function LoginScreen() {
 
     } else {
       const tutor = await findTutorByEmail(email);
-      if (!tutor || tutor.senha !== senha) {
+      const senhaCorreta = tutor ? await verificarSenha(senha, tutor.senha) : false;
+      if (!tutor || !senhaCorreta) {
         Alert.alert('Erro', 'E-mail ou senha inválidos.');
         setLoading(false);
         return;
@@ -102,7 +114,7 @@ export default function LoginScreen() {
           {mode === 'cadastro' && (
             <View style={styles.field}>
               <Text style={styles.fieldLabel}>Telefone</Text>
-              <TextInput style={styles.input} value={telefone} onChangeText={setTelefone} placeholder="(00) 00000-0000" placeholderTextColor={Colors.textMuted} keyboardType="phone-pad" />
+              <TextInput style={styles.input} value={telefone} onChangeText={text => setTelefone(formatarTelefone(text))} placeholder="(DDD) 9 0000-0000" placeholderTextColor={Colors.textMuted} keyboardType="numeric" maxLength={16} />
             </View>
           )}
           <View style={styles.field}>
