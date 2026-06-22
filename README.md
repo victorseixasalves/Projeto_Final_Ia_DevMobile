@@ -164,11 +164,12 @@ npm run web       # Navegador web
 
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Autores
 
 O projeto foi desenvolvido por **Victor Seixas Alves** e **Caio Luis Silva Macedo**
 
 [![GitHub](https://img.shields.io/badge/GitHub-victorseixasalves-181717?style=for-the-badge&logo=github)](https://github.com/victorseixasalves)
+[![GitHub](https://img.shields.io/badge/GitHub-caiodesono-181717?style=for-the-badge&logo=github)](https://github.com/caiodesono)
 
 ---
 
