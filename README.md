@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/images/icon.png" alt="PetCare IA Logo" width="120" height="120" style="border-radius: 24px"/>
-
 # 🐾 PetCare IA
 
 **Triagem veterinária inteligente com Lógica Fuzzy para tutores de animais**
