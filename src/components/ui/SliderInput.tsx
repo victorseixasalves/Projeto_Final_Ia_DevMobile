@@ -10,14 +10,16 @@ interface Props {
   labelMin: string;
   labelMax: string;
   onChange: (v: number) => void;
+  invertColor?: boolean; // true = alto é verde, baixo é vermelho (ex: apetite)
 }
 
-export default function SliderInput({ label, value, min = 0, max = 10, labelMin, labelMax, onChange }: Props) {
+export default function SliderInput({ label, value, min = 0, max = 10, labelMin, labelMax, onChange, invertColor = false }: Props) {
   const pct = ((value - min) / (max - min)) * 100;
+  const colorPct = invertColor ? 100 - pct : pct;
   const steps = Array.from({ length: max - min + 1 }, (_, i) => i + min);
 
-  const trackColor = getTrackColor(pct);
-  const badgeColor = getBadgeColor(pct);
+  const trackColor = getTrackColor(colorPct);
+  const badgeColor = getBadgeColor(colorPct);
 
   return (
     <View style={styles.container}>

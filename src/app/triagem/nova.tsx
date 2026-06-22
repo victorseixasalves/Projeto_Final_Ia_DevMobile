@@ -62,7 +62,7 @@ export default function NovaTriagemScreen() {
             <Text style={styles.cardTitle}>Comportamento</Text>
           </View>
           <SliderInput label="Letargia (nível de energia)" value={letargia} labelMin="Ativo e alerta" labelMax="Imóvel / sem resposta" onChange={setLetargia} />
-          <SliderInput label="Apetite" value={apetite} labelMin="Sem apetite" labelMax="Apetite normal" onChange={setApetite} />
+          <SliderInput label="Apetite" value={apetite} labelMin="Sem apetite" labelMax="Apetite normal" onChange={setApetite} invertColor />
         </View>
 
         <View style={styles.card}>
