@@ -56,11 +56,11 @@ export default function ResultadoScreen() {
   const corLight = data.corLight || '#E8F5E9';
 
   const inputs = [
-    { label: 'Letargia', value: data.letargia, max: 10 },
-    { label: 'Apetite', value: data.apetite, max: 10 },
-    { label: 'Freq. Respiratória', value: data.freqResp, max: 10 },
-    { label: 'Hidratação', value: data.hidratacao, max: 10 },
-    { label: 'Mucosas', value: data.mucosas, max: 10 },
+    { label: 'Letargia', value: data.letargia, max: 10, invert: false },
+    { label: 'Apetite', value: data.apetite, max: 10, invert: true },
+    { label: 'Freq. Respiratória', value: data.freqResp, max: 10, invert: false },
+    { label: 'Hidratação', value: data.hidratacao, max: 10, invert: false },
+    { label: 'Mucosas', value: data.mucosas, max: 10, invert: false },
   ];
 
   return (
@@ -100,7 +100,7 @@ export default function ResultadoScreen() {
           <View key={inp.label} style={styles.inputRow}>
             <Text style={styles.inputLabel}>{inp.label}</Text>
             <View style={styles.inputBar}>
-              <View style={[styles.inputBarFill, { width: `${(inp.value / inp.max) * 100}%` as any, backgroundColor: getBarColor(inp.value, inp.max) }]} />
+              <View style={[styles.inputBarFill, { width: `${(inp.value / inp.max) * 100}%` as any, backgroundColor: getBarColor(inp.value, inp.max, inp.invert) }]} />
             </View>
             <Text style={styles.inputValue}>{inp.value}</Text>
           </View>
@@ -128,10 +128,11 @@ export default function ResultadoScreen() {
   );
 }
 
-function getBarColor(v: number, max: number) {
+function getBarColor(v: number, max: number, invert: boolean = false) {
   const pct = v / max;
-  if (pct <= 0.33) return Colors.urgenciaBaixa;
-  if (pct <= 0.66) return Colors.urgenciaMedia;
+  const effectivePct = invert ? 1 - pct : pct;
+  if (effectivePct <= 0.33) return Colors.urgenciaBaixa;
+  if (effectivePct <= 0.66) return Colors.urgenciaMedia;
   return Colors.urgenciaAlta;
 }
 
